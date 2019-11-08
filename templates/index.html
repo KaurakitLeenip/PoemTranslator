@@ -6,15 +6,20 @@
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <form>
-        Poem: <br>
-        <input type="text" name="raw_input">
+    <form id="input" action="http://localhost:5000/result" method="post">
+        Poem:<br>
+        <textarea class="input" name="raw_input">{{original}}</textarea><br>
         Times to Translate:<br>
-        <input type="text" name="num_iterations">
-        <input type="submit" value="Submit">
+        <input type="text" name="num_iterations"><br>
+        <input type="submit" value="Submit"><br>
     </form>
 
-    <script>
-    </script>
+    <div id="result">
+        <label id="poem">
+        {% for line in poem %}
+            {{ line }}<br>
+        {% endfor %}
+        </label>
+    </div>
 </body>
 </html>
