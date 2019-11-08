@@ -4,22 +4,26 @@
     <meta charset="UTF-8">
     <title>PoemTranslator</title>
 </head>
-<body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <form id="input" action="http://localhost:5000/result" method="post">
-        Poem:<br>
-        <textarea class="input" name="raw_input">{{original}}</textarea><br>
-        Times to Translate:<br>
-        <input type="text" name="num_iterations"><br>
-        <input type="submit" value="Submit"><br>
-    </form>
 
-    <div id="result">
+<body>
+    <div align="center" style="text-align: left;">
+        <form id="input" action="http://localhost:5000/result" method="post">
+            <h3>Poem:</h3>
+            <textarea class="input" name="raw_input" rows="24" cols="40" required>{{original}}</textarea><br>
+            Times to Translate:<br>
+            <input type="text" name="num_iterations" size="3" pattern="^[0-9]+$" title="Must be a number" required><br>
+            <input type="submit" value="Submit"><br>
+        </form>
+    </div>
+    <div id="result" align="center" style="text-align: left;">
+        <h3>Output</h3>
         <label id="poem">
         {% for line in poem %}
             {{ line }}<br>
         {% endfor %}
         </label>
     </div>
+
 </body>
+
 </html>

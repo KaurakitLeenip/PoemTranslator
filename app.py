@@ -1,17 +1,19 @@
 from flask import Flask, render_template, request
 from google.cloud import translate_v2 as translater
-from google.oauth2 import service_account
 import random
 
 app = Flask(__name__)
-credentials = service_account.Credentials.from_service_account_file(
-    '/home/kleenip/Downloads/translateapipoem-2c244528fce0.json'
-)
-translate_client = translater.Client(credentials=credentials)
+# credentials = service_account.Credentials.from_service_account_file(
+#     'C:/Users/Kaurakit_Leenip/Downloads/translateapipoem-2c244528fce0.json'
+# )
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="C:\\Users\\Kaurakit_Leenip\\Downloads\\translateapipoem-2c244528fce0.json"
+
+translate_client = translater.Client()
 
 @app.route('/')
 def main():
-    return render_template('index.html', poem=[])
+    return render_template('index.html', poem=[], original=orig)
     # pass
 
 @app.route('/result', methods=['GET', 'POST'])
@@ -19,7 +21,6 @@ def get_result():
     poem = request.form['raw_input'].split('\r\n')
     res = []
     iterations = int(request.form['num_iterations'])
-    # print(poem, iterations)
     for line in poem:
         res.append(translate(line, iterations))
 
@@ -40,10 +41,30 @@ def get_language():
     choice = random.choice(results)
     return choice['language']
 
-test = """Infinite in mystery is the gift of the Goddess
-We seek it thus, and take to the sky
-Ripples form on the water's surface
-The wandering soul knows no rest."""
+orig = """Time passes
+Years wane
+Fate dances
+Wills change
+
+Pages turn
+Forgotten names 
+Memories burn
+in life's flames
+
+To hold on
+is sheer folly
+But we're drawn
+despite what we see
+
+To keep going
+One foot after next
+Never slowing
+Doing our best
+
+It still ends
+and the earth still turns 
+our attempt transcends
+All physical forms"""
 # print(translate(test, 50))
 
 if __name__ == "__main__":
