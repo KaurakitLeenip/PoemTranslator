@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request
 from google.cloud import translate_v2 as translater
 import random
+from nltk import download, pos_tag
+from nltk.tokenize import word_tokenize
+from nltk.corpus import wordnet
 
+download("brown")
 app = Flask(__name__)
 # credentials = service_account.Credentials.from_service_account_file(
 #     'C:/Users/Kaurakit_Leenip/Downloads/translateapipoem-2c244528fce0.json'
@@ -19,9 +23,27 @@ def main():
 @app.route('/result', methods=['GET', 'POST'])
 def get_result():
     poem = request.form['raw_input'].split('\r\n')
+    new_poem = []
     res = []
-    iterations = int(request.form['num_iterations'])
     for line in poem:
+        newline = ""
+        temp = word_tokenize(line)
+        temp = pos_tag(temp)
+        for word in temp:
+            if word[1][0].lower() in ['n','v','r','a']:
+                try:
+                    synset = random.choice(wordnet.synsets(word[0], word[1][0].lower()))
+                    newline += random.choice(synset.hypernyms()).name().split('.')[0]
+                except IndexError:
+                    continue
+            else:
+                newline += word[0]
+            newline += ' '
+        new_poem.append(newline)
+
+
+    iterations = int(request.form['num_iterations'])
+    for line in new_poem:
         res.append(translate(line, iterations))
 
     return render_template('index.html', poem=res, original='\r\n'.join(poem))
