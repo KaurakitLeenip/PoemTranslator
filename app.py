@@ -6,12 +6,15 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet
 
 download("brown")
+download('punkt')
+download('wordnet')
+download('averaged_perceptron_tagger')
 app = Flask(__name__)
 # credentials = service_account.Credentials.from_service_account_file(
 #     'C:/Users/Kaurakit_Leenip/Downloads/translateapipoem-2c244528fce0.json'
 # )
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="C:\\Users\\Kaurakit_Leenip\\Downloads\\translateapipoem-2c244528fce0.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/kleenip/PycharmProjects/PoemTranslator/translateapipoem-2c244528fce0.json"
 
 translate_client = translater.Client()
 
@@ -24,7 +27,7 @@ def main():
 def get_result():
     poem = request.form['raw_input'].split('\r\n')
     new_poem = []
-    res = []
+    res = ''
     for line in poem:
         newline = ""
         temp = word_tokenize(line)
@@ -32,21 +35,35 @@ def get_result():
         for word in temp:
             if word[1][0].lower() in ['n','v','r','a']:
                 try:
-                    synset = random.choice(wordnet.synsets(word[0], word[1][0].lower()))
-                    newline += random.choice(synset.hypernyms()).name().split('.')[0]
+                    synset = wordnet.synsets(word[0], word[1][0].lower())[0]
+                    hypermyns = [a.name().split('.')[0] for a in synset.hypernyms() if not '_' in a.name()]
+                    hyponyms = [a.name().split('.')[0] for a in synset.hyponyms() if not '_' in a.name()]
+
+                    if hypermyns and hyponyms:
+                        choice = random.randint(0, 1)
+                        if choice:
+                            newline += random.choice(hyponyms)
+                        else:
+                            newline += random.choice(hypermyns)
+                    elif hypermyns and not hypermyns:
+                        newline += random.choice(hypermyns)
+                    else:
+                        newline += random.choice(hyponyms)
+
                 except IndexError:
+                    newline += word[0]
+                    newline += ' '
                     continue
             else:
                 newline += word[0]
             newline += ' '
         new_poem.append(newline)
 
-
     iterations = int(request.form['num_iterations'])
-    for line in new_poem:
-        res.append(translate(line, iterations))
+    # for line in poem:
 
-    return render_template('index.html', poem=res, original='\r\n'.join(poem))
+    res = translate('<br>'.join(new_poem), iterations).replace('&#39;', "'")
+    return render_template('index.html', poem=poem, original='\r\n'.join(res.split('<br>')))
 
 
 def translate(raw, iterations):

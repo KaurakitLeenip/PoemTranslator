@@ -5,25 +5,31 @@
     <title>PoemTranslator</title>
 </head>
 
-<body>
-    <div align="center" style="text-align: left;">
+<body style="background-color:#E6EFF6 ! important; color:#548999">
+<div style="padding: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: row;">
+    <div>
         <form id="input" action="/result" method="post">
             <h3>Poem:</h3>
-            <textarea class="input" name="raw_input" rows="24" cols="40" required>{{original}}</textarea><br>
+            <textarea style="font-size: 12pt; color:#548999; background-color:#e3dbd9" class="input" name="raw_input" rows="24" cols="40" required>{{original}}</textarea><br>
             Times to Translate:<br>
             <input type="text" name="num_iterations" size="3" pattern="^[0-9]+$" title="Must be a number" required><br>
             <input type="submit" value="Submit"><br>
         </form>
     </div>
-    <div id="result" align="center" style="text-align: left;">
-        <h3>Output</h3>
-        <label id="poem">
-        {% for line in poem %}
-            {{ line }}<br>
-        {% endfor %}
-        </label>
+    <div id="result">
+        <div>
+            <h3>Original</h3>
+            <label id="poem">
+                {% for line in poem %}
+                    {{ line }}<br>
+                {% endfor %}
+            </label>
+        </div>
     </div>
-
+</div>
 </body>
 
 </html>
